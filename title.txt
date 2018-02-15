@@ -1,0 +1,6 @@
+% Introduction to multicore programming in C++
+  using the Series Parallel Template Library
+% Umut A. Acar
+  Arthur Chargueraud
+  Mike Rainey
+% First edition
