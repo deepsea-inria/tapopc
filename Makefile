@@ -5,13 +5,15 @@ CHAPTERS=01-preface.markdown 02-cpp-background.markdown 03-fork-join.markdown \
 	06-work-efficiency.markdown 07-automatic-granularity-control.markdown \
 	08-parallel-arrays.markdown 09-parallel-sorting.markdown 10-graphs.markdown
 
-SOURCES=title.txt $(CHAPTERS)
+BOOK_CONTENT=title.txt $(CHAPTERS)
 
-book.pdf : $(SOURCES)
-	pandoc $(SOURCES) -s -o book.pdf
+ALL_SOURCES=$(BOOK_CONTENT) book.css
 
-book.html : $(SOURCES)
-	pandoc $(SOURCES) -s --toc --number-sections --mathjax -c book.css -o book.html
+book.pdf : $(ALL_SOURCES)
+	pandoc $(BOOK_CONTENT) -s -o book.pdf
+
+book.html : $(ALL_SOURCES)
+	pandoc $(BOOK_CONTENT) -s --toc --number-sections --mathjax -c book.css -o book.html
 
 clean:
 	rm -f *.pdf *.html

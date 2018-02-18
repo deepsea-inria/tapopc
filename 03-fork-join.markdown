@@ -31,6 +31,8 @@ the `fork2()` function. The function expects two arguments: one for
 each of the two branches. Each branch is specified by one
 C++ lambda expression.
 
+::::: {#ex-fork-join .example}
+
 **Example 1:** Fork join
 
 In the sample code below, the first branch writes the value 1 into the
@@ -72,6 +74,8 @@ point is effectively blocked. Later, we will explain in some more
 detail the scheduling algorithms that the PASL uses to handle such
 load balancing and synchronization duties.
 
+:::::
+
 In fork-join programs, a thread is a sequence of instructions that do
 not contain calls to `fork2()`.  A thread is essentially a piece of
 sequential computation.  The two branches passed to `fork2()` in the
@@ -79,15 +83,23 @@ example above correspond, for example, to two independent
 threads. Moreover, the statement following the join point (i.e., the
 continuation) is also a thread.
 
-NOTE: If the syntax in the code above is unfamiliar, it might be a
+::::: {#note1 .note}
+
+*Note:* If the syntax in the code above is unfamiliar, it might be a
 good idea to review the notes on lambda expressions in C++11.  In a
 nutshell, the two branches of `fork2()` are provided as
 lambda-expressions where all free variables are passed by reference.
 
-NOTE: Fork join of arbitrary arity is readily derived by repeated
+:::::
+
+::::: {#note2 .note}
+
+*Note:* Fork join of arbitrary arity is readily derived by repeated
 application of binary fork join. As such, binary fork join is
 universal because it is powerful enough to generalize to fork join of
 arbitrary arity.
+
+:::::
 
 All writes performed by the branches of the binary fork join are
 guaranteed by the PASL runtime to commit all of the changes that they
@@ -97,6 +109,8 @@ to memory before the join point is scheduled. The PASL runtime
 guarantees this property by using a local barrier. Such barriers are
 efficient, because they involve just a single dynamic synchronization
 point between at most two processors.
+
+::::: {#ex-writes-and-join .example}
 
 **Example:** Writes and the join statement
 
@@ -122,10 +136,12 @@ Output:
 b1 = 1; b2 = 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-PASL provides no guarantee on the visibility of writes between any two
-parallel branches. In the code just above, for example, writes
-performed by the first branch (e.g., the write to `b1`) may or may not
-be visible to the second, and vice versa. 
+Our fork-join library provides no guarantee on the visibility of
+writes between any two parallel branches. In the code just above, for
+example, writes performed by the first branch (e.g., the write to
+`b1`) may or may not be visible to the second, and vice versa.
+
+:::::
 
 Parallel Fibonacci
 ------------------
@@ -138,10 +154,11 @@ of parallel computing.
 Recall that the $n^{th}$ Fibonnacci number is defined
 by the recurrence relation
 
+$$
 \begin{array}{lcl}
 F(n) & = & F(n-1) + F(n-2)
 \end{array}
-
+$$
 
 with base cases
 
@@ -211,14 +228,16 @@ void map_incr(const int* source, int* dest, size_type n) {
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+::::: {#ex-using-map-incr .example}
+
 **Example:** Using `map_incr`
 
 The code below illustrates  an example use of `map_incr`.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
 const long n = 4;
-long xs[n] = { 1, 2, 3, 4 };
-long ys[n];
+int xs[n] = { 1, 2, 3, 4 };
+int ys[n];
 map_incr(xs, ys, n);
 for (long i = 0; i < n; i++)
   std::cout << ys[i] << " ";
@@ -231,19 +250,25 @@ Output:
 2 3 4 5 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This is not a good parallel algorithm but it is not difficult to give
-a parallel algorithm for incrementing an array. The code for such an
-algorithm is given below.
+:::::
+
+Of course, the algorithm above is sequential. The following solution
+represents a simple parallel version.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
-void map_incr_rec(const long* source, long* dest, long lo, long hi) {
-  long n = hi - lo;
+void map_incr(const int* source, int* dest, size_type n) {
+  map_incr_rec(source, dest, 0, n);
+}
+
+void map_incr_rec(const int* source, int* dest,
+                  size_type lo, size_type hi) {
+  size_type n = hi - lo;
   if (n == 0) {
     // do nothing
   } else if (n == 1) {
     dest[lo] = source[lo] + 1;
   } else {
-    long mid = (lo + hi) / 2;
+    size_type mid = (lo + hi) / 2;
     fork2([&] {
       map_incr_rec(source, dest, lo, mid);
     }, [&] {
@@ -288,7 +313,9 @@ long fib_par(long n) {
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-NOTE: Although this code is slightly different than the sequential
+::::: {#note4 .note}
+
+*Note:* Although this code is slightly different than the sequential
 version that we wrote, it is not too far away, because the only the
 difference is the creation and application of the lambda-expressions.
 An optimizing compiler for C++ can easily "inline" such
@@ -296,6 +323,7 @@ computations. Indeed, After an optimizing compiler applies certain
 optimizations, the performance of this code the same as the
 performance of `fib_seq`.
 
+:::::
 
 The sequential elision is often useful for debugging and for
 optimization.  It is useful for debugging because it is usually easier
@@ -305,6 +333,8 @@ sequentialized code helps us to isolate the purely algorithmic
 overheads that are introduced by parallelism. By isolating these
 costs, we can more effectively pinpoint inefficiencies in our code.
 
+::::: {#ex-fork-join-programs .example}
+
 **Example:** Executing fork-join algorithms
 
 We defined fork-join programs as a subclass case of multithreaded
@@ -313,7 +343,8 @@ program to a multithreaded program. An our running example, let's use the
 `map_incr_rec`, whose code is reproduced below.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
-void map_incr_rec(const int* source, int* dest, size_type lo, size_type hi) {
+void map_incr_rec(const int* source, int* dest,
+                  size_type lo, size_type hi) {
   size_type n = hi - lo;
   if (n == 0) {
     // do nothing
@@ -330,6 +361,8 @@ void map_incr_rec(const int* source, int* dest, size_type lo, size_type hi) {
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+:::::
+
 Since, a fork-join program does not explicitly manipulate threads, it
 is not immediately clear what a thread refers to.  To define threads,
 we can partition a fork-join computation into pieces of serial
@@ -343,11 +376,17 @@ last action.  When partitioning the computation into threads, it is
 important for threads to be maximal; technically a thread can be as
 small as a single instruction.
 
+::::: {#ex-thread .definition}
+
 **Definition:** Thread
 
 A *thread* is a maximal computation consisting of a sequence of
 instructions that do not contain calls to `fork2()` except perhaps at
 the very end.
+
+:::::
+
+::::: {#ex-dag-parallel-increment .example}
 
 **Example:** Dag for parallel increment on an array of $8$
 
@@ -355,6 +394,8 @@ the very end.
 `fork2` or the continuation of `fork2`, which is empty, an is
 annotated with the interval of the input array that it operates on
 (its argument).](images/inc-parallel-dag.jpg)
+
+:::::
 
 The example above illustrates the dag for an execution of
 `map_incr_rec`.  We partition each invocation of this function into
@@ -375,20 +416,24 @@ work and span of the computation.  If we want to calculate work and
 span ond the dag of threads, we can label each vertex with a weight
 that corresponds to the number of instruction in that thread.
 
-NOTE: The term thread is very much overused in computer science. There
-are *system threads*, which are threads that are known to the
-operating system and which can perform a variety of operations. For
-example, Pthreads library enables creating such system threads and
-programming with them.  There are also many libraries for programming
-with *user-level threads*, which are threads that exist at the
-application level but the operating system does not know about them.
-Then there are threads that are much more specific such as those that
-we have defined for the fork-join programs.  Such threads can be
-mapped to system or user-level threads but since they are more
+::::: {#note5 .note}
+
+*Note:* The term thread is very much overused in computer
+science. There are *system threads*, which are threads that are known
+to the operating system and which can perform a variety of
+operations. For example, Pthreads library enables creating such system
+threads and programming with them.  There are also many libraries for
+programming with *user-level threads*, which are threads that exist at
+the application level but the operating system does not know about
+them.  Then there are threads that are much more specific such as
+those that we have defined for the fork-join programs.  Such threads
+can be mapped to system or user-level threads but since they are more
 specific, they are usually implemented in a custom fashion, usually in
 the user/application space. For this reason, some authors prefer to
 use a different term for such threads, e.g., *spark*, *strand*,
-*task*. 
+*task*.
+
+:::::
 
 Let's observe a few properties of fork-join computations and their
 dags.
@@ -412,6 +457,8 @@ dag by mapping each thread to one of the $P$ processor that is
 available on the hardware. To do this, we can use an online scheduling
 algorithm.
 
+::::: {#ex-two-proc-schedule .example}
+
 **Example:** An example 2-processor schedule
 
 The following is a schedule for the dag shown in the dab above
@@ -434,14 +481,32 @@ Time Step  Processor 1                Processor 2
 
 Table: A 2-processor schedule.
 
+:::::
+
+::::: {#exercise-enabling-tree .exercise}
+
 **Exercise:** Enabling Tree
 
 Draw the enabling tree for the schedule above.
+
+:::::
+
+::::: {#ex-centralized-scheduler .example}
+
+**Example:** Centralized scheduler
 
 ![Centralized scheduler illustrated: The state of the queue and the
 dag after step 4.  Completed vertices are drawn in grey
 (shaded).](images/centralized-scheduler.jpg)
 
+:::::
+
+::::: {#ex-distributed-scheduler .example}
+
+**Example:** Distributed scheduler
+
 ![Distributed scheduler illustrated: The state of the queue and the
 dag after step 4.  Completed vertices are drawn in grey
 (shaded).](images/distributed-scheduler.jpg)
+
+:::::

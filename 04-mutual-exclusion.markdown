@@ -65,6 +65,8 @@ resource, even when it is not intended to be so, threads can easily
 share memory objects, even unintentionally, leading to race
 conditions.
 
+::::: {#ex-writing-same-loc .example}
+
 **Example:** Writing to the same location in parallel
 
 In the code below, both branches of `fork2` are writing into `b`.
@@ -98,6 +100,10 @@ Output:
 b = 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+:::::
+
+::::: {#ex-fib2 .example}
+
 **Example:** Fibonacci
 
 Consider the following alternative implementation of the Fibonacci
@@ -122,11 +128,13 @@ long fib_par_racy(long n) {
 
 This code is not correct because it has a race condition.
 
-As in the example shows, separate threads are updating the value
-result but it might look like this is not a race condition because the
-update consists of an addition operation, which reads the value and
-then writes to `result`. The race condition might be easier to see if
-we expand out the applications of the `+=` operator.
+:::::
+
+As the example shows, separate threads are updating the value result
+but it might look like this is not a race condition because the update
+consists of an addition operation, which reads the value and then
+writes to `result`. The race condition might be easier to see if we
+expand out the applications of the `+=` operator.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
 long fib_par_racy(long n) {
@@ -153,6 +161,8 @@ are not independent: they both read `result` and write to
 `result`. Thus the outcome depends on the order in which these reads
 and writes are performed, as shown in the next example.
 
+::::: {#ex-trace-race .example}
+
 **Example:** Execution trace of a race condition
 
 The following table takes us through one possible execution trace of
@@ -176,6 +186,8 @@ value of result at the same time and thus do not see each others
 write. In this example, the second thread "wins the race" and writes
 into `result`. The value 1 written by the first thread is effectively
 lost by being overwritten by the second thread.
+
+:::::
 
 Synchronization Hardware
 ------------------------
@@ -215,6 +227,7 @@ updated by `compare_exchange_weak` and `compare_exchange_strong`
 operations, the latter of which implement the compare-and-swap
 operation.
 
+::::: {#ex-accessing-cells .example}
 
 **Example:** Accessing the contents of atomic memory cells
 
@@ -237,8 +250,12 @@ Output:
 1
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The key operation that help with race conditions is the
-compare-and-exchange operation.
+:::::
+
+The key operation that help with race conditions is the atomic
+compare-and-exchange operation, aka, atomic compare and swap.
+
+::::: {#definition-compare-swap .definition}
 
 **Definition:** compare and swap
 
@@ -251,6 +268,9 @@ atomically:
   into the `target` and returns `true`.
 - Otherwise, returns `false`.
 
+:::::
+
+::::: {#ex-reading-writing-atomics .example}
 
 **Example:** Reading and writing atomic objects
 
@@ -274,12 +294,16 @@ was_successful = 1; flag = 1
 was_successful2 = 0; flag = 1
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+:::::
+
 As another example use of the `atomic` class, recall our Fibonacci
 example with the race condition. In that example, race condition
 arises because of concurrent writes to the `result` variable. We can
 eliminate this kind of race condition by using different memory
 locations, or by using an atomic class and using a
 `compare_exchange_strong` operation.
+
+::::: {#ex-fib3 .example}
 
 **Example:** Fibonacci
 
@@ -338,6 +362,8 @@ and atomically update `result` only if it has not been modified (by
 another thread) since it was loaded. This guarantees that the `result`
 is always updated (read and modified) correctly without missing an
 update from another thread.
+
+:::::
 
 The example above illustrates a typical use of the compare-and-swap
 operation. In this particular example, we can probably prove our code
