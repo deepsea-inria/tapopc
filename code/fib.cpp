@@ -1,8 +1,7 @@
 
 #include <math.h>
 
-#include "spreduce.hpp"
-#include "spio.hpp"
+#include "benchmark.hpp"
 
 namespace sptl {
 
@@ -33,17 +32,20 @@ long fib_par(long n) {
   return result;
 }
 
-void ex() {
+void ex(sptl::bench::measured_type measured) {
   long n = deepsea::cmdline::parse_or_default_int("n", 10);
-  long r = fib_par(n);
+  long r;
+  measured([&] {
+    r = fib_par(n);
+  });
   std::cout << "result\t" << r << std::endl;
 }
 
 } // end namespace
 
 int main(int argc, char** argv) {
-  sptl::launch(argc, argv, [&] {
-    sptl::ex();
+  sptl::bench::launch(argc, argv, [&] (sptl::bench::measured_type measured) {
+    sptl::ex(measured);
   });
   return 0;
 }
