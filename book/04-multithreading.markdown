@@ -411,9 +411,8 @@ queue.  It has been proven that randomized work-stealing algorithm,
 where idle processors randomly select processors to steal from,
 deliver close to optimal schedules in expectation (in fact with high
 probability) and furthermore incur minimal friction.  Randomized
-schedulers can also be implemented efficiently in practice.  PASL uses
-an scheduling algorithm that is based on work stealing.  We consider
-work-stealing in greater detail in future chapters.
+schedulers can also be implemented efficiently in practice. We
+consider work-stealing in greater detail in future chapters.
 
 Writing Multithreaded Programs: Pthreads
 ----------------------------------------
@@ -433,42 +432,26 @@ mentioned above.
 
 An example Pthread program is shown below.  The main thread (executing
 function `main`) creates 8 child threads and terminates.  Each child
-in turn runs the function `helloWorld` and immediately
+in turn prints its "Hello world!" message and immediately
 terminates. Since the main thread does not wait for the children to
 terminate, it may terminate before the children does, depending on how
 threads are scheduled on the available processors.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
 #include <iostream>
-#include <cstdlib>
-#include <pthread.h>
+#include <thread>
 
-using namespace std;
-
-#define NTHREADS 8
-
-void *helloWorld(void *threadid)
-{
-   long tid;
-   tid = (long)threadid;
-   cout << "Hello world! It is me, 00" << tid << endl;
-   pthread_exit(NULL);
-}
-
-int main ()
-{
-   pthread_t threads[NTHREADS];
-   int rc;
-   int i;
-   for( i=0; i < NTHREADS; i++ ){
-      cout << "main: creating thread 00" << i << endl;
-      error = pthread_create(&threads[i], NULL, helloWorld, (void *) i);
-      if (error) {
-         cout << "Error: unable to create thread," << error << endl;
-         exit(-1);
-      }
-   }
-   pthread_exit(NULL);
+int main(int argc, char** argv) {
+  static constexpr
+  int nb_threads = 8;
+  for (int i = 0; i < nb_threads; i++) {
+    std::cout << "main: creating thread 00" << i << std::endl;
+    auto t = std::thread([=] {
+      std::cout << "Hello world! It is me, 00" << i << std::endl;
+    });
+    t.detach();
+  }
+  return 0;
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

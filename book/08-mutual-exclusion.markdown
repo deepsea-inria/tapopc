@@ -1,18 +1,18 @@
 Critical Sections and Mutual Exclusion
 ======================================
 
-In a multithreaded program, a **critical section** is a part of the
+In a multithreaded program, a ***critical section*** is a part of the
 program that may not be executed by more than one thread at the same
 time. Critical sections typically contain code that alters shared
 objects, such as shared (e.g., global) variables.This means that the
-a critical section requires **mutual exclusion**: only one thread can
+a critical section requires ***mutual exclusion***: only one thread can
 be inside the critical section at any time. 
 
 Since only one thread can be inside a critical section at a time,
 threads must coordinate to make sure that they don't enter the
 critical section at the same time. If threads do not coordinate and
 multiple threads enter the critical section at the same time, we say
-that a **race condition** occurs, because the outcome of the program
+that a ***race condition*** occurs, because the outcome of the program
 depends on the relative timing of the threads, and thus can vary from
 one execution to another. Race conditions are sometimes benign but
 usually not so, because they can lead to incorrect behavior.
@@ -29,15 +29,15 @@ engineers "weeks of poring through millions of lines of code and data
 to find it" according to one of the companies involved.
 
 The problem of designing algorithms or protocols for ensuring mutual
-exclusion is called the **mutual exclusion problem** or the **critical
-section** problem. There are many ways of solving instances of the
+exclusion is called the ***mutual exclusion problem*** or the ***critical
+section*** problem. There are many ways of solving instances of the
 mutual exclusion problem. But broadly, we can distinguish two
-categories: spin-locks and blocking-locks. The idea in **spin locks**
+categories: spin-locks and blocking-locks. The idea in ***spin locks***
 is to busy wait until the critical section is clear of other threads.
-Solutions based on **blocking locks** is similar except that instead
+Solutions based on ***blocking locks*** is similar except that instead
 of waiting, threads simply block. When the critical section is clear,
 a blocked thread receives a signal that allows it to proceed. The
-term **mutex**, short for "mutual exclusion" is sometimes used to
+term ***mutex***, short for "mutual exclusion" is sometimes used to
 refer to a lock.
 
 Mutual exclusions problems have been studied extensively in the
@@ -46,9 +46,9 @@ operating systems research, processes, which like threads are
 independent threads of control, belonging usually but not always to
 different programs, can share certain systems' resources. To enable
 such sharing safely and efficiently, researchers have proposed various
-forms of locks such as **semaphores**, which accepts both a
+forms of locks such as ***semaphores***, which accepts both a
 busy-waiting and blocking semantics. Another class of locks, called
-**condition variables** enable blocking synchronization by
+***condition variables*** enable blocking synchronization by
 conditioning an the value of a variable.
 
 
@@ -197,12 +197,12 @@ hardware systems provide specific synchronization operations that can
 help solve instances of the problem. These operations may allow, for
 example, testing the contents of a (machine) word then modifying it,
 perhaps by swapping it with another word. Such operations are
-sometimes called atomic **read-modify-write** or **RMW**, for short,
+sometimes called atomic ***read-modify-write*** or ***RMW***, for short,
 operations.
 
 A handful of different RMW operations have been proposed. They include
-operations such as **load-link/store-conditional**, **fetch-and-add**,
-and **compare-and-swap**. They typically take the memory location `x`,
+operations such as ***load-link/store-conditional***, ***fetch-and-add***,
+and ***compare-and-swap***. They typically take the memory location `x`,
 and a value `v` and replace the value of stored at `x` with
 `f(x,v)`. For example, the fetch-and-add operation takes the location
 `x` and the increment-amount, and atomically increments the value at
@@ -374,31 +374,30 @@ ABA problem
 -----------
 
 While reasonably powerful, compare-and-swap suffers from the so-called
-**ABA** problem. To see this consider the following scenario where a
+***ABA problem***. To see this consider the following scenario where a
 shared variable `result` is update by multiple threads in parallel: a
-thread, say $T$, reads the `result` and stores its current
-value, say `2`, in `current`. In the mean time some other thread also
-reads `result` and performs some operations on it, setting it back to
-`2` after it is done. Now, thread $T$ takes its turn
-again and attempts to store a new value into `result` by using `2` as
-the old value and being successful in doing so, because the value
-stored in `result` appears to have not changed. The trouble is that
-the value has actually changed and has been changed back to the value
-that it used to be. Thus, compare-and-swap was not able to detect
-this change because it only relies on a simple shallow notion of
-equality. If for example, the value stored in `result` was a pointer,
-the fact that the pointer remains the same does not mean that values
-accessible from the pointer has not been modified; if for example, the
-pointer led to a tree structure, an update deep in the tree could
-leave the pointer unchanged, even though the tree has changed.
+thread, say $T$, reads the `result` and stores its current value, say
+`2`, in `current`. In the mean time some other thread also reads
+`result` and performs some operations on it, setting it back to `2`
+after it is done. Now, thread $T$ takes its turn again and attempts to
+store a new value into `result` by using `2` as the old value and
+being successful in doing so, because the value stored in `result`
+appears to have not changed. The trouble is that the value has
+actually changed and has been changed back to the value that it used
+to be. Thus, compare-and-swap was not able to detect this change
+because it only relies on a simple shallow notion of equality. If for
+example, the value stored in `result` was a pointer, the fact that the
+pointer remains the same does not mean that values accessible from the
+pointer has not been modified; if for example, the pointer led to a
+tree structure, an update deep in the tree could leave the pointer
+unchanged, even though the tree has changed.
 
-This problem is called the **ABA** problem, because it involves
-cycling the atomic memory between the three values $A$,
-$B$, and again $A$). The ABA problem is an
-important limitation of compare-and-swap: the operation itself is not
-atomic but is able to behave as if it is atomic if it can be ensured
-that the equality test of the subject memory cell suffices for
-correctness.
+This problem is named as such, because the ABA problem involves
+cycling the atomic memory between the three values $A$, $B$, and again
+$A$). The ABA problem is an important limitation of compare-and-swap:
+the operation itself is not atomic but is able to behave as if it is
+atomic if it can be ensured that the equality test of the subject
+memory cell suffices for correctness.
 
 In the example below, ABA problem may happen (if the counter is
 incremented and decremented again in between a load and a store) but
@@ -406,7 +405,7 @@ it is impossible to observe because it is harmless. If however, the
 compare-and-swap was on a memory object with references, the ABA
 problem could have had observable effects.
 
-The **ABA** problem can be exploited to give seemingly correct
+The ABA problem can be exploited to give seemingly correct
 implementations that are in fact incorrect. To reduce the changes of
 bugs due to the ABA problem, memory objects subject to
 compare-and-swap are usually tagged with an additional field that

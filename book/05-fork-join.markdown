@@ -7,10 +7,10 @@ computing. In fork join parallelism, computations create opportunities
 for parallelism by branching at certain points that are specified by
 annotations in the program text.
 
-Each branching point *forks* the control flow of the computation into
+Each branching point ***forks*** the control flow of the computation into
 two or more logical threads. When control reaches the branching point,
 the branches start running. When all branches complete, the control
-*joins* back to unify the flows from the branches. Results computed by
+***joins*** back to unify the flows from the branches. Results computed by
 the branches are typically read from memory and merged at the join
 point. Parallel regions can fork and join recursively in the same
 manner that divide and conquer programs split and join recursively. In
@@ -25,11 +25,11 @@ annotations with corresponding serial annotations.  This in turn
 enables reasoning about the semantics or the meaning of parallel
 programs by essentially "ignoring" parallelism.
 
-PASL is a C++ library that enables writing implicitly
-parallel programs.  In PASL, fork join is expressed by application of
-the `fork2()` function. The function expects two arguments: one for
-each of the two branches. Each branch is specified by one
-C++ lambda expression.
+SPTL is the C++ library that we are going to use as the basis for our
+parallel programming.  In SPTL, fork join is expressed by application
+of the `fork2()` function. The function expects two arguments: one for
+each of the two branches. Each branch is specified by one C++ lambda
+expression.
 
 ::::: {#ex-fork-join .example}
 
@@ -67,12 +67,11 @@ b1 = 1; b2 = 2; j = 3;
 When this code runs, the two branches of the fork join are both run to
 completion. The branches may or may not run in parallel (i.e., on
 different cores). In general, the choice of whether or not any two
-such branches are run in parallel is chosen by the PASL runtime
-system. The join point is scheduled to run by the PASL runtime only
-after both branches complete. Before both branches complete, the join
-point is effectively blocked. Later, we will explain in some more
-detail the scheduling algorithms that the PASL uses to handle such
-load balancing and synchronization duties.
+such branches are run in parallel is chosen by the scheduler. The join
+point is scheduled to run by the scheduler only after both branches
+complete. Before both branches complete, the join point is effectively
+blocked. Later, we will explain in some more detail the scheduling
+algorithms that handle such load balancing and synchronization duties.
 
 :::::
 
@@ -102,13 +101,13 @@ arbitrary arity.
 :::::
 
 All writes performed by the branches of the binary fork join are
-guaranteed by the PASL runtime to commit all of the changes that they
-make to memory before the join statement runs. In terms of our code
-snippet, all writes performed by two branches of `fork2` are committed
-to memory before the join point is scheduled. The PASL runtime
-guarantees this property by using a local barrier. Such barriers are
-efficient, because they involve just a single dynamic synchronization
-point between at most two processors.
+guaranteed by SPTL to commit all of the changes that they make to
+memory before the join statement runs. In terms of our code snippet,
+all writes performed by two branches of `fork2` are committed to
+memory before the join point is scheduled. SPTL guarantees this
+property by using a local barrier. Such barriers are efficient,
+because they involve just a single dynamic synchronization point
+between at most two processors.
 
 ::::: {#ex-writes-and-join .example}
 
@@ -189,7 +188,7 @@ long fib_seq (long n) {
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To write a parallel version, we remark that the two recursive calls
-are completely *independent*: they do not depend on each other
+are completely ***independent***: they do not depend on each other
 (neither uses a piece of data generated or written by another).  We
 can therefore perform the recursive calls in parallel.  In general,
 any two independent functions can be run in parallel.  To indicate
@@ -370,7 +369,7 @@ computations, each of which constitutes a thread.  What we mean by a
 serial computation is a computation that runs serially and also that
 does not involve any synchronization with other threads except at the
 start and at the end.  More specifically, for fork-join programs, we
-can define a piece of serial computation a *thread*, if it executes
+can define a piece of serial computation a ***thread***, if it executes
 without performing parallel operations (`fork2`) except perhaps as its
 last action.  When partitioning the computation into threads, it is
 important for threads to be maximal; technically a thread can be as
@@ -380,7 +379,7 @@ small as a single instruction.
 
 **Definition:** Thread
 
-A *thread* is a maximal computation consisting of a sequence of
+A ***thread*** is a maximal computation consisting of a sequence of
 instructions that do not contain calls to `fork2()` except perhaps at
 the very end.
 
@@ -419,19 +418,19 @@ that corresponds to the number of instruction in that thread.
 ::::: {#note5 .note}
 
 *Note:* The term thread is very much overused in computer
-science. There are *system threads*, which are threads that are known
+science. There are ***system threads***, which are threads that are known
 to the operating system and which can perform a variety of
 operations. For example, Pthreads library enables creating such system
 threads and programming with them.  There are also many libraries for
-programming with *user-level threads*, which are threads that exist at
+programming with ***user-level threads***, which are threads that exist at
 the application level but the operating system does not know about
 them.  Then there are threads that are much more specific such as
 those that we have defined for the fork-join programs.  Such threads
 can be mapped to system or user-level threads but since they are more
 specific, they are usually implemented in a custom fashion, usually in
 the user/application space. For this reason, some authors prefer to
-use a different term for such threads, e.g., *spark*, *strand*,
-*task*.
+use a different term for such threads, e.g., ***spark***, ***strand***,
+***task***.
 
 :::::
 

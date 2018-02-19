@@ -85,5 +85,8 @@ LOG_PREFIX=$(SPTL_PREFIX) $(RUNTIME_PREFIX) -DSPTL_ENABLE_LOGGING
 %.dbg: %.cpp $(INCLUDE_FILES)
 	g++ $(DEBUG_PREFIX) $(INCLUDE_DIRECTIVES) -o $@ $<
 
+pthread-hello.bin: pthread-hello.cpp $(INCLUDE_FILES)
+	g++ $(OPT_PREFIX) $(INCLUDE_DIRECTIVES) -pthread -o pthread-hello.bin pthread-hello.cpp
+
 clean: pbench_clean
 	rm -f *.baseline *.elision *.opt *.log *.dbg
