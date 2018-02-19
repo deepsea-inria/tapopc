@@ -1,9 +1,12 @@
 all: book.html
 
-CHAPTERS=01-preface.markdown 02-preliminaries.markdown 03-fork-join.markdown \
-	04-mutual-exclusion.markdown 05-experimenting-with-sptl.markdown \
-	06-work-efficiency.markdown 07-automatic-granularity-control.markdown \
-	08-parallel-arrays.markdown 09-parallel-sorting.markdown 10-graphs.markdown
+CHAPTERS=01-preface.markdown 02-preliminaries.markdown 03-introduction.markdown \
+	04-multithreading.markdown 05-fork-join.markdown 06-async-finish.markdown \
+	07-futures.markdown 08-mutual-exclusion.markdown 09-experimenting-with-sptl.markdown \
+	10-work-efficiency.markdown 11-granularity-control.markdown 12-parallel-arrays.markdown \
+	13-parallel-sorting.markdown  14-graph-theory.markdown 15-tree-computations.markdown \
+	16-models-of-parallelism.markdown 17-graphs.markdown 18-work-stealing.markdown \
+	19-parallelism-vs-concurrency.markdown
 
 BOOK_CONTENT=title.txt $(CHAPTERS)
 

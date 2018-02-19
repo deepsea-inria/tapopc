@@ -376,7 +376,7 @@ last action.  When partitioning the computation into threads, it is
 important for threads to be maximal; technically a thread can be as
 small as a single instruction.
 
-::::: {#ex-thread .definition}
+::::: {#definition-thread .definition}
 
 **Definition:** Thread
 

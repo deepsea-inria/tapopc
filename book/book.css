@@ -73,6 +73,24 @@ h1.title {
         border: none;
 }
 
+.fact {
+        font-size: 100%;
+        background-color: #ccfff2;
+        border: none;
+}
+
+.theorem {
+        font-size: 100%;
+        background-color: #ccfff2;
+        border: none;
+}
+
+.proof {
+        font-size: 100%;
+        background-color: #ccfff2;
+        border: none;
+}
+
 .exercise {
         font-size: 100%;
         background-color: #ccfff2;
