@@ -1,5 +1,50 @@
-Background
-==========
+Preliminaries
+=============
+
+Processors, Processes, and Threads
+----------------------------------
+
+We assume a machine model that consists of a shared memory by a number
+of processors, usually written as $P$. The processors have access to a
+shared memory, which is readable and writable by all processors.
+
+We assume that an operating system or a that allows us to create
+***processes***. The kernel schedules processes on the available
+processors in a way that is mostly out of our control with one
+exception: the kernel allows us to create any number of processes and
+***pin*** them on the available processors as long as no more than one
+process is pinned on a processor.
+
+We define a ***thread*** to be a piece of sequential computation whose
+boundaries, i.e., its start and end points, are defined on a case by
+case basis, usually based on the programming model. In reality, there
+different notions of threads. For example, a system-level thread is
+created by a call to the kernel and scheduled by the kernel much like
+a process. A user-level thread is created by the application program
+and is scheduled by the application—user level threads are invisible
+to the kernel. Common property of all threads is that they perform a
+sequential computation. In this class, we will usually talk about
+user-level threads. In the literature, you will encounter many
+different terms for a user-level thread, such as "fiber", "sparc",
+"strand", etc.
+
+For our purposes in this book an ***application***, a piece of
+runnable software, can only create threads but no processes. We will
+assume that we can assign to an application any number of processes to
+be used for execution. If an application is run all by itself (without
+any other application running at the same time) and if all of its
+processes are pinned, then we refer to such an execution as occurring
+in the ***dedicated mode***.
+
+::::: {#note001 .note}
+
+*Note:* For now, we leave the details of the memory-consistency model
+ unspecified.
+
+:::::
+
+C++ Background
+--------------
 
 The material is entirely based on C++ and a library for writing
 parallel programs in C++. We use recent features of C++ such as
@@ -8,8 +53,7 @@ these topics is not necessary to follow the course notes, because we
 explain them at a high level as we go, but such prior knowledge might
 be helpful; some pointers are provided below.
 
-Template metaprogramming
-------------------------
+### Template metaprogramming
 
 Templates are C++'s way of providing for parametric polymorphism,
 which allows using the same code at multiple types. For example, in
@@ -98,8 +142,7 @@ material covered in this book. Templates are covered in significant
 detail by many books, blogs, and discussions boards. We refer the
 interested reader to those sources for further information.
 
-Lambda expressions
-------------------
+### Lambda expressions
 
 The C++11 reference provides good documentation on
 [lambda expressions](http://en.cppreference.com/w/cpp/language/lambda).

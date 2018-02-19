@@ -1,12 +1,11 @@
 Preface
 =======
 
-The goal of these notes is to introduce the reader to the following.
+The goal of this book is to cover the fundamental concepts of parallel
+computing, including models of computation, parallel algorithms, and
+techniques for implementing and evaluating parallel algorithms.
 
-1. Parallel computing in imperative programming languages and C++ in
-   particular, and
-2. Real-world performance and efficiency concerns in writing parallel
-   software and techniques for dealing with them.
+Our primany focus will be hardware-shared memory parallelism.
 
 For parallel programming in C++, we use a library, called the Series
 Parallel Template Library (SPTL, from hereon), that we have been

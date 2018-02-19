@@ -1,6 +1,6 @@
 all: book.html
 
-CHAPTERS=01-preface.markdown 02-cpp-background.markdown 03-fork-join.markdown \
+CHAPTERS=01-preface.markdown 02-preliminaries.markdown 03-fork-join.markdown \
 	04-mutual-exclusion.markdown 05-experimenting-with-sptl.markdown \
 	06-work-efficiency.markdown 07-automatic-granularity-control.markdown \
 	08-parallel-arrays.markdown 09-parallel-sorting.markdown 10-graphs.markdown
