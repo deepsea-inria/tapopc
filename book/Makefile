@@ -16,7 +16,7 @@ book.pdf : $(ALL_SOURCES)
 	pandoc $(BOOK_CONTENT) -s -o book.pdf
 
 book.html : $(ALL_SOURCES)
-	pandoc $(BOOK_CONTENT) -s --toc --number-sections --mathjax -c book.css -o book.html
+	pandoc $(BOOK_CONTENT) -s --toc --toc-depth=2 --number-sections --mathjax -c book.css -o book.html
 
 clean:
 	rm -f *.pdf *.html
