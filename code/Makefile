@@ -89,4 +89,4 @@ pthread-hello.bin: pthread-hello.cpp $(INCLUDE_FILES)
 	g++ $(OPT_PREFIX) $(INCLUDE_DIRECTIVES) -pthread -o pthread-hello.bin pthread-hello.cpp
 
 clean: pbench_clean
-	rm -f *.baseline *.elision *.opt *.log *.dbg
+	rm -f *.baseline *.elision *.opt *.log *.dbg *.bin
