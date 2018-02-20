@@ -176,7 +176,7 @@ void future_map_g (future<int>* source, future<int>* dest, size_type n) {
 
 void doit(size_type n) {
   future<int>* source = new future<int>[n];
-  future<int>* dest = new future<it>[n];
+  future<int>* dest = new future<int>[n];
   mk_array(source, n);
   future_map_g(source, dest, n);
 }
