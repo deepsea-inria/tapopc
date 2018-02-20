@@ -293,7 +293,7 @@ algorithm as follows.
 
 ::::: {#ex-typical-online-scheduling-algorithm .example}
 
-**Typical Online Scheduling Algorithm**
+**Example:** Typical Online Scheduling Algorithm
 
 The algorithm maintains a ***work pool*** of work, consisting of ready
 threads, and executes them. Execution starts with the root thread in
