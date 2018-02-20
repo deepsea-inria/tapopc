@@ -49,7 +49,7 @@ h1.title {
   text-align: center;
 }
 
-.date {
+!.date {
         font-size: 100%;
         text-align: center;
         border: none;
@@ -57,44 +57,52 @@ h1.title {
 
 .example {
         font-size: 100%;
-        background-color: #ccfff2;
-        border: none;
+	border-left-style: solid;
+	border-left-color: coral;
+	padding-left: 9px;
 }
 
 .note {
         font-size: 100%;
-        background-color: #defcf6;
-        border: none;
+	border-left-style: solid;
+	border-left-color: lightgrey;
+	padding-left: 9px;
 }
 
 .definition {
         font-size: 100%;
-        background-color: #ccfff2;
-        border: none;
+	border-left-style: solid;
+	border-left-color: black;
+	padding-left: 9px;
 }
 
 .fact {
         font-size: 100%;
-        background-color: #ccfff2;
-        border: none;
+	border-left-style: solid;
+	border-left-color: black;
+	padding-left: 9px;
 }
 
 .theorem {
         font-size: 100%;
-        background-color: #ccfff2;
-        border: none;
+	border-left-style: solid;
+	border-left-color: black;
+	padding-left: 9px;
 }
 
 .proof {
         font-size: 100%;
-        background-color: #ccfff2;
-        border: none;
+	border-left-style: solid;
+	border-left-color: black;
+	border-left-style: dotted;
+	padding-left: 9px;
 }
 
 .exercise {
         font-size: 100%;
-        background-color: #ccfff2;
-        border: none;
+	border-left-style: solid;
+	border-left-color: red;
+	padding-left: 9px;
 }
 
 dt code {
