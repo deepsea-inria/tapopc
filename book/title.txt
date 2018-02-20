@@ -1,5 +1,4 @@
-% Introduction to multicore programming in C++
-  using the Series Parallel Template Library
+% Parallel Computing: Theory and Practice
 % Umut A. Acar
   Arthur Chargueraud
   Mike Rainey
