@@ -61,7 +61,7 @@ Controlled statements
 In SPTL, a ***controlled statement***, or `cstmt`, is an annotation in
 the program text that activates automatic granularity control for a
 specified region of code. In particular, a controlled statement
-behaves as a Clatexmath:[++] statement that has the special ability to choose on
+behaves as a C++ statement that has the special ability to choose on
 the fly whether or not the computation rooted at the body of the
 statement spawns parallel threads.  To support such automatic
 granularity control SPTL uses a prediction algorithm to map the
@@ -72,7 +72,7 @@ threshold (determined automatically for the specific machine), then
 that instance is sequentialized, by turning off the ability to spawn
 parallel threads for the execution of that instance.  If the predicted
 processor cycle count is higher than the threshold, then the statement
-instance is executed in parallel. 
+instance is executed in parallel.
 
 In other words, the reader can think of a controlled statement as a
 statement that executes in parallel when the benefits of parallel
