@@ -41,7 +41,7 @@ algorithm.
 
 ::::: {#definition-asymptotic-work-efficiency .definition}
 
-**Definition:** asymptotic work efficiency
+**Definition:** Asymptotic work efficiency
 
 An algorithm is ***asymptotically work efficient*** if the work of the
 algorithm is the same as the work of the best known serial algorithm.
@@ -72,7 +72,7 @@ $r$.
 
 ::::: {#definition-observed-work-efficiency .definition}
 
-**Definition:** observed work efficiency
+**Definition:** Observed work efficiency
 
 A parallel algorithm that runs in time $T_1$ on a single
 processor has *observed work efficient factor of $r$* if
