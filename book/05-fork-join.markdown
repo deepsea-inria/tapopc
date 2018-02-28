@@ -234,11 +234,11 @@ void map_incr(const int* source, int* dest, size_type n) {
 The code below illustrates  an example use of `map_incr`.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
-const long n = 4;
+const size_type n = 4;
 int xs[n] = { 1, 2, 3, 4 };
 int ys[n];
 map_incr(xs, ys, n);
-for (long i = 0; i < n; i++)
+for (size_type i = 0; i < n; i++)
   std::cout << ys[i] << " ";
 std::cout << std::endl;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
