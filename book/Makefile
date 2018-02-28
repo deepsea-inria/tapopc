@@ -1,4 +1,4 @@
-all: book.html
+all: book.html book.pdf
 
 CHAPTERS=01-preface.markdown 02-preliminaries.markdown 03-introduction.markdown \
 	04-multithreading.markdown 05-fork-join.markdown 06-async-finish.markdown \
