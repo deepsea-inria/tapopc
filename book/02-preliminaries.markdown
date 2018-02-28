@@ -142,6 +142,24 @@ material covered in this book. Templates are covered in significant
 detail by many books, blogs, and discussions boards. We refer the
 interested reader to those sources for further information.
 
+### The "size type"
+
+In C++, the *size type*
+(a.k.a. [`size_t`](http://en.cppreference.com/w/cpp/types/size_t)) is
+is an unsigned integer type that has special status. Its purpose is to
+be a representation that is appropriate for taking the size of and
+indexing into container data structures.
+
+The underlying representation is important because on different
+machines the size type may have a different number of bits. Perhaps
+unsurprisingly, for instance, the size type may be represented by a 32
+bit unsigned integer on a 32-bit CPU and by 64 a bit integer on a
+64-bit CPU.
+
+By convention, in this document (and in the SPTL), we assume that
+`size_type` is globally defined and use this size type any time we
+need to use an index into or the size of a container.
+
 ### Lambda expressions
 
 The C++11 reference provides good documentation on
