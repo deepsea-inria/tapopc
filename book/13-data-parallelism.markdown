@@ -182,9 +182,9 @@ structure is a common pattern in parallel computing.
 
 **Example:** Addition monoid
 
-- $S$ = the set of all 64-bit unsigned integers;
-$\oplus$ = addition modulo $2^{64}$;
-$\mathbf{I}$ = 0
+- $S$ = the set of all 64-bit unsigned integers
+- $\oplus$ = addition modulo $2^{64}$
+- $\mathbf{I}$ = 0
 
 :::::
 
@@ -192,9 +192,9 @@ $\mathbf{I}$ = 0
 
 **Example:** Multiplication monoid
 
-- $S$ = the set of all 64-bit unsigned integers;
-$\oplus$ = multiplication modulo $2^{64}$;
-$\mathbf{I}$ = 1
+- $S$ = the set of all 64-bit unsigned integers
+- $\oplus$ = multiplication modulo $2^{64}$
+- $\mathbf{I}$ = 1
 
 :::::
 
@@ -202,8 +202,9 @@ $\mathbf{I}$ = 1
 
 **Example:** Max monoid
 
-- $S$ = the set of all 64-bit unsigned integers;
-$\oplus$ = max function; $\mathbf{I}$ = 0
+- $S$ = the set of all 64-bit unsigned integers
+- $\oplus$ = max function
+- $\mathbf{I}$ = 0
 
 :::::
 
@@ -257,7 +258,8 @@ auto plus_fct = [&] (int x, int y) {
   return x+y;
 };
 
-sparray xs = { 1, 2, 3 };
+parray<int> xs = { 1, 2, 3 };
+
 std::cout << "reduce(xs.begin(), xs.end(), 0, plus_fct) = "
           << reduce(xs.begin(), xs.end(), 0, plus_fct)
           << std::endl;
@@ -290,7 +292,8 @@ auto max_fct = [&] (int x, int y) {
   return std::max(x, y);
 };
 
-sparray xs = { -3, 1, 634, 2, 3 };
+parray<int> xs = { -3, 1, 634, 2, 3 };
+
 std::cout << "reduce(xs.begin(), xs.end(), xs[0], max_fct) = "
           << reduce(xs.begin(), xs.end(), xs[0], max_fct)
           << std::endl;
