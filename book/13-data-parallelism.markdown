@@ -156,6 +156,176 @@ parray<double> dmdvmult2(double* mtx, double* vec, double* dest, size_type n) {
 Reduction
 ---------
 
+A ***reduction*** is an operation which combines a given set of values
+according to a specified *identity element* and a specified
+*associative combining operator*. Let $S$ denote a set. Recall from
+algebra that an associative combining operator is any binary operator
+$\oplus$ such that, for any three items $x,y,z \in S$, the following
+holds.
+
+$$
+x \oplus (y \oplus z) = (x \oplus y) \oplus z
+$$
+
+An element $\mathbf{I} \in S$ is an identity element if for any $x \in
+S$ the following holds.
+
+$$
+(x \oplus \mathbf{I}) \, = \, (\mathbf{I} \oplus x) \, = \, x
+$$
+
+This algebraic structure consisting of $(S, \oplus, \mathbf{I})$ is
+called a ***monoid*** and is particularly worth knowing because this
+structure is a common pattern in parallel computing.
+
+::::: {#ex-reduction-addition-monoid .example}
+
+**Example:** Addition monoid
+
+- $S$ = the set of all 64-bit unsigned integers;
+$\oplus$ = addition modulo $2^{64}$;
+$\mathbf{I}$ = 0
+
+:::::
+
+::::: {#ex-reduction-multiplication-monoid .example}
+
+**Example:** Multiplication monoid
+
+- $S$ = the set of all 64-bit unsigned integers;
+$\oplus$ = multiplication modulo $2^{64}$;
+$\mathbf{I}$ = 1
+
+:::::
+
+::::: {#ex-reduction-max-monoid .example}
+
+**Example:** Max monoid
+
+- $S$ = the set of all 64-bit unsigned integers;
+$\oplus$ = max function; $\mathbf{I}$ = 0
+
+:::::
+
+The identity element is important because we are working with
+sequences: having a base element is essential for dealing with empty
+sequences. For example, what should the sum of the empty sequence?
+More interestingly, what should be the maximum (or minimum) element of
+an empty sequence? The identity element specifies this behavior.
+
+What about the associativity of $\oplus$? Why does associativity
+matter? Suppose we are given the sequence $[ a_0, a_1, \ldots, a_n
+]$. The serial reduction of this sequence always computes the
+expression $(a_0 \oplus a_1 \oplus \ldots \oplus a_n)$. However, when
+the reduction is performed in parallel, the expression computed by the
+reduction could be $( (a_0 \oplus a_1 \oplus a_2 \oplus a_3) \oplus
+(a_4 \oplus a_5) \oplus \ldots \oplus (a_{n-1} \oplus a_n) )$ or $(
+(a_0 \oplus a_1 \oplus a_2) \oplus (a_3 \oplus a_4 \oplus a_5) \oplus
+\ldots \oplus (a_{n-1} \oplus a_n) )$. In general, the exact placement
+of the parentheses in the parallel computation depends on the way that
+the parallel algorithm decomposes the problem. Associativity gives the
+parallel algorithm the flexibility to choose an efficient order of
+evaluation and still get the same result in the end. The flexibility
+to choose the decomposition of the problem is exploited by efficient
+parallel algorithms, for reasons that should be clear by now. In
+summary, associativity is a key building block to the solution of many
+problems in parallel algorithms.
+
+Now that we have monoids for describing a generic method for combining
+two items, we can consider a generic method for combining many items
+in parallel. Once we have this ability, we will see that we can solve
+the remaining problems from last homework by simply plugging the
+appropriate monoids into our generic operator, `reduce`. The interface
+of this operator in our framework is specified below. The first
+parameter corresponds to $\oplus$, the second to the identity element,
+and the third to the sequence to be processed.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
+template <class Iter, class Item, class Combine>
+Item reduce(Iter lo, Iter hi, Item id, Combine combine);
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We can solve our first problem by plugging integer plus as $\oplus$
+and 0 as $\mathbf{I}$.
+
+::::: {#ex-summing-array-by-reduction .example}
+
+**Example:** Summing elements of array
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
+auto plus_fct = [&] (int x, int y) {
+  return x+y;
+};
+
+sparray xs = { 1, 2, 3 };
+std::cout << "reduce(xs.begin(), xs.end(), 0, plus_fct) = "
+          << reduce(xs.begin(), xs.end(), 0, plus_fct)
+          << std::endl;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Output:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+reduce(xs.begin(), xs.end(), 0, plus_fct) = 6
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:::::
+
+We can solve our second problem in a similar fashion. Note that in
+this case, since we know that the input sequence is nonempty, we can
+pass the first item of the sequence as the identity element.  What
+could we do if we instead wanted a solution that can deal with
+zero-length sequences? What identity element might make sense in that
+case? Why?
+
+::::: {#ex-array-max-by-reduction .example}
+
+**Example:** Taking max of elements of array
+
+Let us start by solving a special case: the one where the input
+sequence is nonempty.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
+auto max_fct = [&] (int x, int y) {
+  return std::max(x, y);
+};
+
+sparray xs = { -3, 1, 634, 2, 3 };
+std::cout << "reduce(xs.begin(), xs.end(), xs[0], max_fct) = "
+          << reduce(xs.begin(), xs.end(), xs[0], max_fct)
+          << std::endl;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Output:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+reduce(xs.begin(), xs.end(), xs[0], max_fct) = 634
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Observe that in order to seed the reduction we selected the
+provisional maximum value to be the item at the first position of the
+input sequence. Now let us handle the general case by seeding with the
+smallest possible value of type `int`.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
+int max(parray<int>& xs) {
+  int id = std::numeric_limits<int>::lowest();
+  return reduce(xs.begin(), xs.end(), id, [&] (int x, int y) {
+    return std::max(x, y);
+  });
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The value of `std::numeric_limits<int>::lowest()` is defined by the
+header file `<limits>`.
+
+:::::
+
+Like the tabulate function, reduce is a higher-order function. Just
+like any other higher-order function, the work and span costs have to
+account for the cost of the client-supplied function, which is in this
+case, the associative combining operator.
+
 Scan
 ----
 
