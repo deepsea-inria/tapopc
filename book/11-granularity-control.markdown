@@ -289,7 +289,7 @@ void dmdvmult(double* mtx, double* vec, double* dest, size_type n) {
     return (hi - lo) * n;
   };
   parallel_for(compl_fct, (size_type)0, n, [&] (size_type i) {
-    ddotprod(mtx, v, dest, i);
+    dest[i] = ddotprod(mtx, v, dest, i);
   });
   return dest;
 }
