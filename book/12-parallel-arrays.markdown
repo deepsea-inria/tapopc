@@ -471,3 +471,7 @@ duplication-degree parameter, `k`.
   sizes?
 
 :::::
+
+Iterators
+---------
+
