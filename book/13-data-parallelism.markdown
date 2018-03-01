@@ -87,14 +87,13 @@ parray<int> duplicate(const parray<int>& src) {
 Thus far, we have considered tabulations that use a generator function
 with constant-time work complexity. Let us first analyze the work and
 span for the simple case, in which the generator function takes
-constant work (and hence, constant span), and then handle the general
-case.  In the case where the generator function has constant work
-complexity, it should be clear that the tabulation should take work
-linear in the size of the array. The reason is that the only work
-performed by the body of the loop is performed by the constant-time
-generator function. Since the loop itself performs as many iterations
-as positions in the array, the work cost is indeed linear in the size
-of the array. The span cost of the tabulation is the sum of two
+constant work, and then handle the general case.  In the simple case,
+it should be clear that the tabulation should take work linear in the
+size of the array. The reason is that the only work performed by the
+body of the loop is performed by the constant-time generator
+function. Since the loop itself performs as many iterations as
+positions in the array, the work cost is indeed linear in the size of
+the array. The span cost of the tabulation is the sum of two
 quantitles: the span taken by the loop and the maximum value of the
 spans taken by the applications of the generator function. Recall that
 we saw before that the span cost of a parallel-for loop with $n$
@@ -131,6 +130,14 @@ parray(size_type n, Complexity c, Generator g);
 ::::: {#ex-tabulation-complexity-function .example}
 
 **Example:** Tabulation with complexity function
+
+Here, we return to our [matrix-multiplication
+example](#ex-dense-matrix-multiply). This time, however, we use a
+tabulation to materialize the result vector `r`, whereas in the
+original example we used destination passing style. Because the
+application of the generator function, in this case, the dot product,
+takes linear work, the complexity function `compl_fct` reports linear
+complexity for each iteration of the tabulation.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
 parray<double> dmdvmult2(double* mtx, double* vec, double* dest, size_type n) {

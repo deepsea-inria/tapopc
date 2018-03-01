@@ -274,6 +274,11 @@ void map_incr(const int* source, int* dest, size_type n) {
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+::::: {#ex-dense-matrix-multiply .example}
+
+**Example:** Dense matrix by dense vector multiplication, showing the
+  use of an explicit complexity function
+
 The following code snippet shows a more interesting case for the
 complexity function. In this case, we are performing a multiplication
 of a dense matrix by a dense vector. The outer loop iterates over the
@@ -294,6 +299,8 @@ void dmdvmult(double* mtx, double* vec, double* dest, size_type n) {
   return dest;
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:::::
 
 ::::: {#ex-speedup-matrix-multiply .example}
 
