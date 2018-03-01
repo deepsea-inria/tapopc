@@ -329,6 +329,41 @@ like any other higher-order function, the work and span costs have to
 account for the cost of the client-supplied function, which is in this
 case, the associative combining operator.
 
+There are two cases to consider for any reduction $\mathtt{reduce}(lo,
+hi, id, f)$:
+
+1. ***Constant-time associative combining operator.*** The amount of
+work performed by the reduction is $O(hi-lo)$ and the span is $O(\log
+(hi-lo))$.
+
+2. ***Non-constant-time associative combining operator.*** We define
+$\mathcal{R}$ to be the set of all function applications $f(x, y)$
+that are performed in the reduction tree. Then,
+
+    - The work performed by the reduction is $O(n + \sum_{f(x, y) \in
+    \mathcal{R}(f, id, lo, hi)} W(f(x, y)))$.
+
+    - The span of the reduction is $O(\log n \max_{f(x, y) \in
+    \mathcal{R}(f, id, lo, hi)} S(f(x, y)))$.
+
+Under certain conditions, we can use the following lemma to deduce a
+more precise bound on the amount of work performed by the
+reduction.
+
+::::: {#lemma-work-efficiency .lemma}
+
+***Lemma (Work efficiency).*** For any associative combining operator
+$f$ and weight function $w$, if for any $x$, $y$,
+
+- $w(f(x, y)) \leq w(x) + w(y)$, and
+- $W \leq c (w(x) + w(y))$, for some constant $c$,
+
+where $W$ denotes the amount of work performed by the call $f(x, y)$,
+then the amount of work performed by the reduction is $O(\log (hi-lo)
+\sum_{lo \leq it < hi} (1 + w(*it)))$.
+
+:::::
+
 Scan
 ----
 

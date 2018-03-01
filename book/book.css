@@ -90,6 +90,13 @@ h1.title {
 	      padding-left: 9px;
 }
 
+.lemma {
+        font-size: 100%;
+	      border-left-style: solid;
+	      border-left-color: black;
+	      padding-left: 9px;
+}
+
 .proof {
         font-size: 100%;
 	      border-left-style: solid;
