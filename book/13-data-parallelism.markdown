@@ -539,9 +539,202 @@ style* in the preliminaries section...
 
 :::::
 
+Filter and pack
+---------------
 
-Derived operations
-------------------
+The filter operation copies out from a given sequence of items a
+subsequence of those items that satisfy a given predicate. Formally,
+given a sequence $[ x_0, \ldots, x_n ]$ and predicate $p(x)$, the
+result of the filter operation is the sequence $[ x_i \, | \, p(x_i)
+]$.
+
+In the SPTL version of the filter operation, the input sequence is
+represented in the usual style, by an iterator-based range, namely
+`[lo, hi)`. The predicate function `p(x)` takes an item `x` and
+returns `true` if `x` should be present in the new sequence and
+`false` otherwise. The return result is an array of copies of the
+items from the input array that satisfy the predicate. The order of
+the items in the input is preserved in the result of the filter
+operation.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
+template <class Iter, class Pred>
+parray<value_type_of<Iter>> filter(Iter lo, Iter hi, Pred p);
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::::: {#note-type-operator .note}
+
+*Note:* The type of the result array may appear strange because this
+type, namely `parray<value_type_of<Iter>>`, uses a type-level
+function, in this case, `value_type_of`, to access the type of the
+items that are pointed to by the iterator. For example, if our
+iterator `Iter` is instantiated by `int*`, then the value type of this
+iterator is the type `int`.
+
+The definition of our type-level function is just an alias for another
+type-level function provided by the `<iterator>` header file in the
+STL.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
+template <class Iter>
+using value_type_of = typename std::iterator_traits<Iter>::value_type;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Such type-level operators are possible because C++ specifies that, by
+[convention](http://www.cplusplus.com/reference/iterator/), every
+valid iterator object specifies the type of
+
+:::::
+
+::::: {#ex-filter-evens .example}
+
+**Example:** Extracting the even numbers of a given sequence
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
+parray<int> extract_evens(int* lo, int* hi) {
+  return filter(lo, hi, [&] (int x) {
+    return (x % 2) == 0;
+  });
+}
+
+parray<int> xs = { 3, 5, 8, 12, 2, 13, 0 };
+std::cout << "extract_evens(xs) = " << extract_evens(xs) << std::endl;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Output:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+extract_evens(xs) = { 8, 12, 2, 0 }
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:::::
+
+Now, let us consider how to write a good parallel implementation of
+the filter operation. Because it is instructive, we are going to first
+consider a sequential algorithm, point out the challenges for
+parallelism, and then turn our attention to a parallel solution.
+
+::::: {#ex-filter-sequential .example}
+
+**Example:** Solution to the sequential-filter problem
+
+The particular instance of the filter problem that we are considering
+is complicated by the fact that
+
+- We are working with an array data structure that does *not* suport
+  efficient incremental resizing (to resize, the cost is always linear
+  in the size of the array).
+- We do not know until after the predicates are applied how many items
+  we need.
+
+As such, our solution takes two passes, a first one where we compute
+and store the results of the applications of the predicate functions,
+and a second where we copy the values to the result array.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
+template <class Iter, class Pred>
+parray<value_type_of<Iter>> filter(Iter lo, Iter hi, Pred p) {
+  size_type n = hi - lo;
+  size_type m;
+  parray<bool> flags(n);
+  // phase 1
+  for (size_type i = 0; i < n; i++) {
+    if (p(lo[i])) {
+      flags[i] = true;
+      m++;
+    }
+  }
+  parray<value_type_of<Iter>> result(m);
+  size_type k = 0;
+  // phase 2
+  for (size_type i = 0; i < n; i++) {
+    if (flags[i]) {
+      result[k++] = lo[i];
+    }
+  }
+  return result;
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In our solution, at the same time we are storing the results of the
+predicate applications, we use `m` to keep track of how many items are
+to be written to the result array. Just after the first phase, the
+value in `m` represents the number of items to appear in the result
+array. In the second phase, when we copy out the items, we use a
+counter `k` to track the index of the next available cell in the
+result array. This situation might seem similar to some of the
+sequential codes we have seen before, at least in the sense that the
+value in the counter cell `k` depends on the value of `k` from the
+previous iteration.
+
+:::::
+
+::::: {#exercise-filter-seq .exercise}
+
+**Exercise:** In the sequential solution above, it appears that there
+are two particular obstacles to parallelization.  What are they?
+
+Hint: the obstacles relate to the use of variables `m` and `k`.
+
+:::::
+
+::::: {#exercise-filter-seq2 .exercise}
+
+**Exercise:** Under one particular assumption regarding the predicate,
+this sequential solution takes linear time in the size of the input,
+using two passes. What is the assumption?
+
+:::::
+
+Now, the starting point for our parallel algorithm is the partial
+solution shown below. The idea is to first apply the predicate
+function to the items in the input sequence, cache the predicate
+applications in the array named `flags`, and then to extract the
+values for the result array using the call to the `pack` function.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
+template <class Iter, class Pred>
+parray<value_type_of<Iter>> filter(Iter lo, Iter hi, Pred p) {
+  parray<bool> flags(hi - lo, [&] (size_type i) {
+    return p(lo[i]);
+  });
+  return pack(flags.begin(), flags.end(), lo, hi);
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Because the computation of the `flags` array is a simple tabulation,
+the interesting part of the filter algorithm sits behind the call to
+the function named `pack`.
+
+::::: {#exercise-pack .exercise}
+
+**Exercise:** Pack: solving the parallel-allocation problem
+
+The challenge of this exercise is following: given two arrays of the
+same size, the first consisting of boolean valued fields and the
+second containing the values, return the array that contains the
+values selected by the flags. The items in the result array should
+appear in the same relative order as there is in the input
+sequence. Your solution should take linear work and logarithmic span
+in the size of the input.
+
+For instance:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
+parray<bool> flags = { true, false, false, true, false, true, true };
+parray<int>  xs    = {   34,    13,     5,    1,    41,   11,   10 };
+std::cout << "pack(flags, xs) = "
+          << pack(flags.begin(), flags.end(), xs.begin(), xs.end())
+          << std::endl;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Output:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+pack(flags, xs) = { 34, 1, 11, 10 }
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:::::
 
 Summary of operations
 ---------------------
