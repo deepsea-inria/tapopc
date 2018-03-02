@@ -408,9 +408,9 @@ x_{n-1} ]$ to $[ \mathbf{I}, x_0, x_0 \oplus x_1, x_0 \oplus x_1
 
 :::::
 
-::::: {#ex-forward-inclusive-scan .example}
+::::: {#ex-backward-inclusive-scan .example}
 
-**Example:** Forward-inclusive scan
+**Example:** Backward-inclusive scan
 
 The inclusive form maps a given sequence $[ x_0, x_1, x_2, \ldots,
 x_{n-1} ]$ to $[ x_0 \oplus x_1 \oplus \ldots \oplus x_{n-1}, x_{n-2}
@@ -418,9 +418,9 @@ x_{n-1} ]$ to $[ x_0 \oplus x_1 \oplus \ldots \oplus x_{n-1}, x_{n-2}
 
 :::::
 
-::::: {#ex-forward-exclusive-scan .example}
+::::: {#ex-backward-exclusive-scan .example}
 
-**Example:** Forward-exclusive scan
+**Example:** Backward-exclusive scan
 
 The exclusive form maps a given sequence $[ x_0, x_1, x_2, \ldots,
 x_{n-1} ]$ to $[ x_0 \oplus x_1 \oplus \ldots \oplus x_{n-2}, x_{n-2}
