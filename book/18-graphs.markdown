@@ -384,7 +384,7 @@ and `store()` methods.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
 const size_type n = 3;
-std::atomic<bool> visited[n];
+parray<std::atomic<bool>> visited(n);
 size_type v = 2;
 visited[v].store(false);
 std::cout << visited[v].load() << std::endl;
@@ -412,7 +412,7 @@ following steps, atomically:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
 const size_type n = 3;
-std::atomic<bool> visited[n];
+parray<std::atomic<bool>> visited(n);
 size_type v = 2;
 visited[v].store(false);
 bool orig = false;
