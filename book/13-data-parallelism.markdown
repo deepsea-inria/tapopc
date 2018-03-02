@@ -364,6 +364,13 @@ then the amount of work performed by the reduction is $O(\log (hi-lo)
 
 :::::
 
+::::: {#todo-reduction-examples .todo}
+
+**TODO:** Give some code examples and analyses of programs with
+interesting non-constant-time reductions.
+
+:::::
+
 Scan
 ----
 
@@ -395,9 +402,29 @@ x_{n-1} ]$ to $[ x_0, x_0 \oplus x_1, x_0 \oplus x_1 \oplus x_2,
 
 **Example:** Forward-exclusive scan
 
-The inclusive form maps a given sequence $[ x_0, x_1, x_2, \ldots,
+The exclusive form maps a given sequence $[ x_0, x_1, x_2, \ldots,
 x_{n-1} ]$ to $[ \mathbf{I}, x_0, x_0 \oplus x_1, x_0 \oplus x_1
 \oplus x_2, \ldots, x_0 \oplus x_1 \oplus \ldots \oplus x_{n-2} ]$.
+
+:::::
+
+::::: {#ex-forward-inclusive-scan .example}
+
+**Example:** Forward-inclusive scan
+
+The inclusive form maps a given sequence $[ x_0, x_1, x_2, \ldots,
+x_{n-1} ]$ to $[ x_0 \oplus x_1 \oplus \ldots \oplus x_{n-1}, x_{n-2}
+\oplus x_{n-1}, x_{n-1} ]$.
+
+:::::
+
+::::: {#ex-forward-exclusive-scan .example}
+
+**Example:** Forward-exclusive scan
+
+The exclusive form maps a given sequence $[ x_0, x_1, x_2, \ldots,
+x_{n-1} ]$ to $[ x_0 \oplus x_1 \oplus \ldots \oplus x_{n-2}, x_{n-2}
+\oplus x_{n-1}, x_{n-1}, \mathbf{I} ]$.
 
 :::::
 
@@ -475,6 +502,13 @@ that the given associative operator takes constant time. It might be
 worth pausing for a moment to consider this fact, because the
 specification of scan may at first look like it would resist a
 solution that is both highly parallel and work efficient.
+
+::::: {#todo-scan-algorithm .todo}
+
+**TODO:** Present a work-efficient scan algorithm and do a more
+thorough job with its cost analysis.
+
+:::::
 
 Derived operations
 ------------------
