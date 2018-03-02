@@ -428,6 +428,23 @@ x_{n-1} ]$ to $[ x_0 \oplus x_1 \oplus \ldots \oplus x_{n-2}, x_{n-2}
 
 :::::
 
+The interfact to scan resembles that of `reduce`, except that `scan`
+takes one additional argument, `st`, and that the return result is an
+array of partial sums rather than just one sum.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
+template <
+  class Iter,
+  class Item,
+  class Combine
+>
+parray<Item> scan(Iter lo,
+                  Iter hi,
+                  Item id,
+                  Combine combine,
+                  scan_type st);
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Scan has applications in many parallel algorithms. To name just a few,
 scan has been used to implement radix sort, search for regular
 expressions, dynamically allocate processors, evaluate polynomials,
@@ -436,7 +453,8 @@ scan is a key component of so many efficient parallel algorithms. In
 this course, we are going to study a few more applications not in this
 list.
 
-The examples shown above suggest the following sequential algorithm.
+The specification shown above suggests the following sequential
+algorithm.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
 template <class Iter, class Item, class Combine>
@@ -509,6 +527,18 @@ solution that is both highly parallel and work efficient.
 thorough job with its cost analysis.
 
 :::::
+
+::::: {#todo-scan-dps .todo}
+
+**TODO:** Show destination-passing style version of scan, show how
+  it's useful to get the sum of the whole interval in addition to
+  getting the exclusive scan in an destination array.
+
+Also, maybe need to introduce the concept of *destination passing
+style* in the preliminaries section...
+
+:::::
+
 
 Derived operations
 ------------------
