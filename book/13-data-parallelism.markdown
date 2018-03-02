@@ -738,3 +738,15 @@ pack(flags, xs) = { 34, 1, 11, 10 }
 
 Summary of operations
 ---------------------
+
+::::: {#todo-data-parallel-summary .todo}
+
+**TODO:** Consider whether this subsection is needed. The idea
+  previously was to present a summary table of operations and their
+  asymptotic complexities. Now, we have the advantage of there being a
+  proper library documentation of all operations. So, the only purpose
+  I can see to having a summary section here is to use this space for
+  a condensed list of operations (there is a fair amount of complexity
+  in the manual, which could be onerous for students).
+
+:::::
