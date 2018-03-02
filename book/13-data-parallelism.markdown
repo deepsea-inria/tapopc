@@ -367,6 +367,115 @@ then the amount of work performed by the reduction is $O(\log (hi-lo)
 Scan
 ----
 
+A ***scan*** is an iterated reduction that comes in four
+varieties. Because each of the two dimensions in the `scan_type` are
+symmetrical, the concept is easy to see if we consider just, say,
+`forward_inclusive_scan`, for example.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
+using scan_type = enum {
+  forward_inclusive_scan,
+  forward_exclusive_scan,
+  backward_inclusive_scan,
+  backward_exclusive_scan
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::::: {#ex-forward-inclusive-scan .example}
+
+**Example:** Forward-inclusive scan
+
+The inclusive form maps a given sequence $[ x_0, x_1, x_2, \ldots,
+x_{n-1} ]$ to $[ x_0, x_0 \oplus x_1, x_0 \oplus x_1 \oplus x_2,
+\ldots, x_0 \oplus x_1 \oplus \ldots \oplus x_{n-1} ]$.
+
+:::::
+
+::::: {#ex-forward-exclusive-scan .example}
+
+**Example:** Forward-exclusive scan
+
+The inclusive form maps a given sequence $[ x_0, x_1, x_2, \ldots,
+x_{n-1} ]$ to $[ \mathbf{I}, x_0, x_0 \oplus x_1, x_0 \oplus x_1
+\oplus x_2, \ldots, x_0 \oplus x_1 \oplus \ldots \oplus x_{n-2} ]$.
+
+:::::
+
+Scan has applications in many parallel algorithms. To name just a few,
+scan has been used to implement radix sort, search for regular
+expressions, dynamically allocate processors, evaluate polynomials,
+etc. Suffice to say, scan is important and worth knowing about because
+scan is a key component of so many efficient parallel algorithms. In
+this course, we are going to study a few more applications not in this
+list.
+
+The examples shown above suggest the following sequential algorithm.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
+template <class Iter, class Item, class Combine>
+void scan_exclusive_seq(Iter lo, Iter hi, Iter dst_lo, Item id, Combine combine) {
+  Item acc = id;
+  for (Iter it = lo; it != hi; it++, dst_lo++) {
+    *dst_lo = acc;
+    acc = combine(acc, *it);
+  }
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This algorithm is clearly sequential because the result of each
+iteration after the first one depends on the result of the previous
+iteration. Thus, this exact approach is not likely to lead to a good
+parallel solution.
+
+One might then consider a solution such as the following, where we
+break the chain of dependencies by doing extra work. The extra work is
+represented by the fact that each iteration in the parallel-for loop
+performs some additions that are redundant with those of other
+iterations.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cpp}
+template <class Iter, class Item, class Combine>
+void scan_exclusive(Iter lo, Iter hi, Iter dst_lo, Item id, Combine combine) {
+  size_type n = hi - lo;
+  if (n == 0) {
+    return;
+  }
+  dst_lo[0] = id;
+  parallel_for((size_type)1, n, [&] (size_type i) {
+    dst[i] = reduce(lo, lo + i, id, combine);
+  });
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::::: {#exercise-scan-blowup .exercise}
+
+**Exercise:** Although the solution above now exposes comparatively
+abundant parallelism, it has a serious problem. Think about what it
+may be.
+
+:::::
+
+::::: {#exercise-scan-complexity .exercise}
+
+**Exercise:** What is the work complexity of the scan solution above?
+
+:::::
+
+::::: {#exercise-scan-blowup .exercise}
+
+**Exercise:** Do you see the problem with the scan solution now? In
+two words, what is that solution *not* that we want the solution to
+be?
+
+:::::
+
+Can we do better? Yes, in fact, there exist solutions that take, in
+the size of the input, both linear time and logarithmic span, assuming
+that the given associative operator takes constant time. It might be
+worth pausing for a moment to consider this fact, because the
+specification of scan may at first look like it would resist a
+solution that is both highly parallel and work efficient.
+
 Derived operations
 ------------------
 
