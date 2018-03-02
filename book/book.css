@@ -76,6 +76,13 @@ h1.title {
 	      padding-left: 9px;
 }
 
+.algorithm {
+        font-size: 100%;
+	      border-left-style: solid;
+	      border-left-color: black;
+	      padding-left: 9px;
+}
+
 .fact {
         font-size: 100%;
 	      border-left-style: solid;

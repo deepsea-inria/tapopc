@@ -736,6 +736,16 @@ pack(flags, xs) = { 34, 1, 11, 10 }
 
 :::::
 
+Flatten
+-------
+
+::::: {#todo-flatten .todo}
+
+**TODO:** Consider documenting a "flatten" operation, which comes in
+  handy for quicksort.
+
+:::::
+
 Summary of operations
 ---------------------
 
