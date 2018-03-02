@@ -164,3 +164,12 @@ need to use an index into or the size of a container.
 
 The C++11 reference provides good documentation on
 [lambda expressions](http://en.cppreference.com/w/cpp/language/lambda).
+
+Destination-passing style
+-------------------------
+
+::::: {#todo-destination-passing .todo}
+
+**TODO:** Write a brief explanation of the concept.
+
+:::::

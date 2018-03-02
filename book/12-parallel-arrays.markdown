@@ -475,3 +475,8 @@ duplication-degree parameter, `k`.
 Iterators
 ---------
 
+::::: {#todo-iterators .todo}
+
+**TODO:** Write a short explanation of the concept.
+
+:::::
