@@ -1,4 +1,4 @@
-% Parallel Computing: Theory and Practice
+% Theory and Practice of Parallel Computing
 % Umut A. Acar
   Arthur Chargueraud
   Mike Rainey
