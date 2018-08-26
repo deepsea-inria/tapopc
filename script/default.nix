@@ -37,6 +37,7 @@ let
     sptl = callPackage "${sources.sptlSrc}/script/default.nix" { };
     pbbs-include = callPackage "${sources.pbbsIncludeSrc}/default.nix" { };
     pbbsSptlSrc = sources.pbbsSptlSrc;
+    tapopcSrc = sources.tapopcSrc;
     
   };
 
@@ -47,23 +48,18 @@ with self;
 stdenv.mkDerivation rec {
   name = "tapopc";
 
-  src = pbbsSptlSrc;
+  src = tapopcSrc;
 
   buildInputs =
-    let docs =
-      if buildDocs then
-        let pandocCiteproc = pkgs.haskellPackages.ghcWithPackages (pkgs: with pkgs; [pandoc-citeproc]);
-        in
-        [ pkgs.pandoc pandocCiteproc ]
-      else [];
+    let pandocCiteproc = pkgs.haskellPackages.ghcWithPackages (pkgs: with pkgs; [pandoc-citeproc]);
     in
     let lu =
       if useLibunwind then [ libunwind ] else [];
     in
     [ pbench sptl pbbs-include cmdline chunkedseq
       pkgs.makeWrapper pkgs.R pkgs.texlive.combined.scheme-small
-      pkgs.ocaml gcc pkgs.wget
-    ] ++ docs ++ lu;
+      pkgs.ocaml gcc pkgs.wget pandocCiteproc
+    ] ++ lu;
 
   configurePhase =
     let hwlocConfig =
@@ -93,19 +89,14 @@ stdenv.mkDerivation rec {
     '';
 
   buildPhase =
-    let docs =
-      if buildDocs then ''
-        make -C book/
-      '' else "";
-    in
     let getNbCoresScript = pkgs.writeScript "get-nb-cores.sh" ''
       #!/usr/bin/env bash
       ${sptl}/bin/get-nb-cores.sh
     '';
     in
     ''
-    ${docs}
-    mkdir -p bench
+    make -C book
+#    mkdir -p bench
 #    cp ${getNbCoresScript} bench/
 #    make -C bench bench.pbench
     '';  
@@ -153,6 +144,8 @@ stdenv.mkDerivation rec {
 #    cp bench/*.sptl bench/*.sptl_elision $out/bench/
     mkdir -p $out/book
     cp book/book.* $out/book/
+    mkdir -p $out/book/images/
+    cp -r book/images/*.jpg $out/book/images/
     '';
 
   meta = {
