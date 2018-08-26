@@ -88,8 +88,8 @@ stdenv.mkDerivation rec {
     let sptlConfigFile = pkgs.writeText "sptl_config.txt" "${sptl}/bin/"; in
     ''
     cp -r --no-preserve=mode ${pbench} pbench
-    cp ${settingsScript} bench/settings.sh
-    cp ${sptlConfigFile} bench/sptl_config.txt
+#    cp ${settingsScript} bench/settings.sh
+#    cp ${sptlConfigFile} bench/sptl_config.txt
     '';
 
   buildPhase =
@@ -105,8 +105,9 @@ stdenv.mkDerivation rec {
     in
     ''
     ${docs}
-    cp ${getNbCoresScript} bench/
-    make -C bench bench.pbench
+    mkdir -p bench
+#    cp ${getNbCoresScript} bench/
+#    make -C bench bench.pbench
     '';  
 
   installPhase =
@@ -131,26 +132,25 @@ stdenv.mkDerivation rec {
     in
     ''
     mkdir -p $out/bench/
-    cp bench/bench.pbench bench/timeout.out $out/bench/
-    wrapProgram $out/bench/bench.pbench --prefix PATH ":" ${pkgs.R}/bin \
-       --prefix PATH ":" ${pkgs.texlive.combined.scheme-small}/bin \
-       --prefix PATH ":" ${gcc}/bin \
-       --prefix PATH ":" ${pkgs.wget}/bin \
-       --prefix PATH ":" $out/bench \
-       --prefix LD_LIBRARY_PATH ":" ${gcc}/lib \
-       --prefix LD_LIBRARY_PATH ":" ${gcc}/lib64 \
-       --prefix LD_LIBRARY_PATH ":" ${gperftools}/lib \
-       --prefix LD_LIBRARY_PATH ":" ${cilk-plus-rts-with-stats}/lib \
-       --set TCMALLOC_LARGE_ALLOC_REPORT_THRESHOLD 100000000000 \
-       ${lu} \
-       ${hw} \
-       --add-flags "${flags}"
-    pushd bench
-    $out/bench/bench.pbench compare -only make
-    $out/bench/bench.pbench bfs -only make
-    popd
-    cp bench/sptl_config.txt $out/bench/sptl_config.txt
-    cp bench/*.sptl bench/*.sptl_elision $out/bench/
+    # cp bench/bench.pbench bench/timeout.out $out/bench/
+    # wrapProgram $out/bench/bench.pbench --prefix PATH ":" ${pkgs.R}/bin \
+    #    --prefix PATH ":" ${pkgs.texlive.combined.scheme-small}/bin \
+    #    --prefix PATH ":" ${gcc}/bin \
+    #    --prefix PATH ":" ${pkgs.wget}/bin \
+    #    --prefix PATH ":" $out/bench \
+    #    --prefix LD_LIBRARY_PATH ":" ${gcc}/lib \
+    #    --prefix LD_LIBRARY_PATH ":" ${gcc}/lib64 \
+    #    --prefix LD_LIBRARY_PATH ":" ${gperftools}/lib \
+    #    --prefix LD_LIBRARY_PATH ":" ${cilk-plus-rts-with-stats}/lib \
+    #    --set TCMALLOC_LARGE_ALLOC_REPORT_THRESHOLD 100000000000 \
+    #    ${hw} \
+#       --add-flags "${flags}"
+#    pushd bench
+#    $out/bench/bench.pbench compare -only make
+#    $out/bench/bench.pbench bfs -only make
+#    popd
+#    cp bench/sptl_config.txt $out/bench/sptl_config.txt
+#    cp bench/*.sptl bench/*.sptl_elision $out/bench/
     mkdir -p $out/book
     cp book/book.* $out/book/
     '';
