@@ -30,13 +30,13 @@ let
 
     buildDocs = buildDocs;
 
-    pbench = callPackage "${sources.pbenchSrc}/script/default.nix" { };
-    cmdline = callPackage "${sources.cmdlineSrc}/script/default.nix" { };
-    cilk-plus-rts-with-stats = callPackage "${sources.cilkRtsSrc}/script/default.nix" { };
-    chunkedseq = callPackage "${sources.chunkedseqSrc}/script/default.nix" { };
-    sptl = callPackage "${sources.sptlSrc}/script/default.nix" { };
-    pbbs-include = callPackage "${sources.pbbsIncludeSrc}/default.nix" { };
-    pbbsSptlSrc = sources.pbbsSptlSrc;
+    # pbench = callPackage "${sources.pbenchSrc}/script/default.nix" { };
+    # cmdline = callPackage "${sources.cmdlineSrc}/script/default.nix" { };
+    # cilk-plus-rts-with-stats = callPackage "${sources.cilkRtsSrc}/script/default.nix" { };
+    # chunkedseq = callPackage "${sources.chunkedseqSrc}/script/default.nix" { };
+    # sptl = callPackage "${sources.sptlSrc}/script/default.nix" { };
+    # pbbs-include = callPackage "${sources.pbbsIncludeSrc}/default.nix" { };
+    # pbbsSptlSrc = sources.pbbsSptlSrc;
     tapopcSrc = sources.tapopcSrc;
     
   };
@@ -56,7 +56,8 @@ stdenv.mkDerivation rec {
     let lu =
       if useLibunwind then [ libunwind ] else [];
     in
-    [ pbench sptl pbbs-include cmdline chunkedseq
+    [
+#      pbench sptl pbbs-include cmdline chunkedseq
       pkgs.makeWrapper pkgs.R pkgs.texlive.combined.scheme-small
       pkgs.ocaml gcc pkgs.wget pandocCiteproc
     ] ++ lu;
@@ -72,32 +73,28 @@ stdenv.mkDerivation rec {
     in
     let settingsScript = pkgs.writeText "settings.sh" ''
       PBENCH_PATH=../pbench/
-      CMDLINE_PATH=${cmdline}/include/
-      CHUNKEDSEQ_PATH=${chunkedseq}/include/
-      SPTL_PATH=${sptl}/include/
+#      CMDLINE_PATH={cmdline}/include/
+#      CHUNKEDSEQ_PATH={chunkedseq}/include/
+#      SPTL_PATH={sptl}/include/
       USE_32_BIT_WORD_SIZE=1
       USE_FIBRIL=1
       CUSTOM_MALLOC_PREFIX=-ltcmalloc -L${gperftools}/lib
       ${hwlocConfig}    
     '';
     in
-    let sptlConfigFile = pkgs.writeText "sptl_config.txt" "${sptl}/bin/"; in
     ''
-    cp -r --no-preserve=mode ${pbench} pbench
 #    cp ${settingsScript} bench/settings.sh
-#    cp ${sptlConfigFile} bench/sptl_config.txt
     '';
 
   buildPhase =
-    let getNbCoresScript = pkgs.writeScript "get-nb-cores.sh" ''
-      #!/usr/bin/env bash
-      ${sptl}/bin/get-nb-cores.sh
-    '';
-    in
+    # let getNbCoresScript = pkgs.writeScript "get-nb-cores.sh" ''
+    #   #!/usr/bin/env bash
+    #   ${sptl}/bin/get-nb-cores.sh
+    # '';
+    # in
     ''
     make -C book
 #    mkdir -p bench
-#    cp ${getNbCoresScript} bench/
 #    make -C bench bench.pbench
     '';  
 
@@ -132,7 +129,7 @@ stdenv.mkDerivation rec {
     #    --prefix LD_LIBRARY_PATH ":" ${gcc}/lib \
     #    --prefix LD_LIBRARY_PATH ":" ${gcc}/lib64 \
     #    --prefix LD_LIBRARY_PATH ":" ${gperftools}/lib \
-    #    --prefix LD_LIBRARY_PATH ":" ${cilk-plus-rts-with-stats}/lib \
+    #    --prefix LD_LIBRARY_PATH ":" {cilk-plus-rts-with-stats}/lib \
     #    --set TCMALLOC_LARGE_ALLOC_REPORT_THRESHOLD 100000000000 \
     #    ${hw} \
 #       --add-flags "${flags}"
